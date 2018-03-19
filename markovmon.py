@@ -1,6 +1,6 @@
 # Starting using this tutorial: https://towardsdatascience.com/simulating-text-with-markov-chains-in-python-1a27e6d13fc6
 
-import random
+import random, sys
 
 def make_pairs(letter):
 	for i in range(len(letter)-1):
@@ -24,7 +24,7 @@ def generate(dictionary, length=8):
 	alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 	seed = random.sample(dictionary.keys(), 1)
 	chain = seed
-	for i in range(length):
+	for i in range(length-1):
 		# check for non-alpha characters
 		try:
 			chain += random.choice(dictionary[chain[-1]])
@@ -37,7 +37,19 @@ def generate(dictionary, length=8):
 
 frequencies = create_corpus("pokemon.txt")
 
-for x in range(10):
-	print(generate(frequencies, 9))
+# for x in range(10):
+# 	print(generate(frequencies, 9))
+
+if __name__ == "__main__":
+	if len(sys.argv) < 2:
+		print(generate(frequencies))
+	elif len(sys.argv) == 2:
+		length = int(sys.argv[1])
+		print(generate(frequencies, length))
+	else:
+		length = int(sys.argv[1])
+		amount = int(sys.argv[2])
+		for x in range(amount):
+			print(generate(frequencies, length))
 
 
