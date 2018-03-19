@@ -1,40 +1,43 @@
+# Starting using this tutorial: https://towardsdatascience.com/simulating-text-with-markov-chains-in-python-1a27e6d13fc6
+
 import random
-
-pokemon_list = open('pokemon.txt', encoding="utf8").read()
-# print(pokemon_list)
-
-corpus = pokemon_list.lower().split()
-# print(corpus)
 
 def make_pairs(letter):
 	for i in range(len(letter)-1):
 		yield (letter[i], letter[i+1])
 
-# pairs = make_pairs('bepis')
+def create_corpus(filename):
+	# this file should be a newline-delineated file
+	file = open(filename, encoding="utf8").read()
+	corpus = file.lower().split()
+	dictionary = {}
+	for word in corpus:
+		pair = make_pairs(word)
+		for l1, l2 in pair:
+			if l1 in dictionary.keys():
+				dictionary[l1].append(l2)
+			else:
+				dictionary[l1] = [l2]
+	return dictionary
 
-word_dict = {}
-
-for pokemon in corpus:
-	pair = make_pairs(pokemon)
-	for letter1, letter2 in pair:
-		if letter1 in word_dict.keys():
-			word_dict[letter1].append(letter2)
-		else:
-			word_dict[letter1] = [letter2]
-
-# print(word_dict)
-
-first_char = random.sample(word_dict.keys(), 1)
-
-chain = [first_char]
-string_chain = first_char
-size = 8
-print(string_chain)
-for i in range(size):
+def generate(dictionary, length=8):
+	alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+	seed = random.sample(dictionary.keys(), 1)
+	chain = seed
+	for i in range(length):
+		# check for non-alpha characters
+		try:
+			chain += random.choice(dictionary[chain[-1]])
+		except KeyError:
+			chain += random.choice(alphabet)
+		
 	
-	last_letter = string_chain[-1]
-	string_chain += random.choice(word_dict[last_letter])
-	# chain.append(random.choice(word_dict[last_letter[0]]))
-	
-string_chain[0] = string_chain[0].upper()
-print("".join(string_chain))
+	name = "".join(chain).title()
+	return name
+
+frequencies = create_corpus("pokemon.txt")
+
+for x in range(10):
+	print(generate(frequencies, 9))
+
+
